@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: servicio-productos
+        uri: lb://servicio-productos
+        predicates:          - Path=/api/productos/**
+        filters:          - StripPrefix=2
+          - ExampleGatewayFileFactory= Hola mi mensaje personalizado, Usuario, JakieAlarcon
+      - id: servicio-items
+        uri: lb://servicio-items
+        predicates:
+          - Path=/api/items/**
+        filters:
+          - StripPrefix=2
+          - AddRequestHeader=token-request, 123456
+          - AddResponseHeader=token-response, 1234
+          - AddRequestParameter=name, Jakie
+eureka:
+    client:
+        fetch-registry: true

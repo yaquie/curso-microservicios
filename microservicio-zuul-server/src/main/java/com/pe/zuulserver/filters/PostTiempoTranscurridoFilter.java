@@ -41,7 +41,7 @@ public class PostTiempoTranscurridoFilter extends ZuulFilter {
 
 	@Override
 	public String filterType() {
-		return "POST";
+		return "post";
 	}
 
 	@Override

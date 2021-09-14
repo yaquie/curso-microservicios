@@ -17,7 +17,6 @@ public class PreTiempoTranscurridoFilter extends ZuulFilter {
 
 	@Override
 	public boolean shouldFilter() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -37,7 +36,7 @@ public class PreTiempoTranscurridoFilter extends ZuulFilter {
 
 	@Override
 	public String filterType() {
-		return "PRE";
+		return "pre";
 	}
 
 	@Override

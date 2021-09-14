@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,28 +29,30 @@ import com.example.springboot.app.item.model.Producto;
 import com.example.springboot.app.item.service.ItemService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
-
 @RefreshScope
 @RestController
 public class ItemController {
-	private static Logger log= LoggerFactory.getLogger(ItemController.class);
-	
+	private static Logger log = LoggerFactory.getLogger(ItemController.class);
+
 	@Autowired
 	private Environment env;
 
 	@Autowired
-	@Qualifier("serviceFeign") //serviceRestTemplate   serviceFeign
+	@Qualifier("serviceFeign") // serviceRestTemplate serviceFeign
 	private ItemService itemService;
-	
+
 	@Value("${configuracion.texto}")
 	private String texto;
 
 	@GetMapping("/listar")
-	public List<Item> listar() {
+	public List<Item> listar(@RequestParam(name = "name", required = false) String name,
+			@RequestHeader(name = "token-request", required = false) String token) {
+		System.out.println("name: " + name);
+		System.out.println("token: " + token);
 		return itemService.findAll();
 	}
-	
-	@HystrixCommand( fallbackMethod = "metodoAlternativo")
+
+	@HystrixCommand(fallbackMethod = "metodoAlternativo")
 	@GetMapping("/ver/{id}/cantidad/{cantidad}")
 	public Item detalle(@PathVariable Long id, @PathVariable Integer cantidad) {
 		return itemService.findById(id, cantidad);
@@ -64,24 +68,24 @@ public class ItemController {
 		itm.setProducto(p);
 		return itm;
 	}
-	
+
 	@GetMapping("/obtener-config")
-	public ResponseEntity<?> obtenerConfig(@Value("${server.port}") String puerto){
+	public ResponseEntity<?> obtenerConfig(@Value("${server.port}") String puerto) {
 		log.info("texto -> " + texto);
-		
-		Map<String, String> json= new HashMap<>();
+
+		Map<String, String> json = new HashMap<>();
 		json.put("texto", texto);
 		json.put("puerto", puerto);
-		
-		if (env.getActiveProfiles().length> 0 && env.getActiveProfiles()[0].equals("dev")) {
+
+		if (env.getActiveProfiles().length > 0 && env.getActiveProfiles()[0].equals("dev")) {
 			json.put("autor.nombre", env.getProperty("configuracion.autor.nombre"));
 			json.put("autor.email", env.getProperty("configuracion.autor.email"));
 		}
-		
+
 		return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK);
-		
+
 	}
-	
+
 	@PostMapping("/crear")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Producto crear(@RequestBody Producto prod) {
@@ -100,8 +104,7 @@ public class ItemController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void eliminar(@PathVariable Long id) {
 		itemService.delete(id);
-		
+
 	}
-	
-	
+
 }

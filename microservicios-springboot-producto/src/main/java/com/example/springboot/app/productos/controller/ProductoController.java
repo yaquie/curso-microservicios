@@ -55,11 +55,12 @@ public class ProductoController {
 		}
 
 		Producto producto = iProductoService.findById(id);
-		if (null != producto) {
-			producto.setPort(port);
-		} else {
-			log.info("no se encontro producto");
-		}
+		producto.setPort(port);
+//		if (null != producto) {
+//			producto.setPort(port);
+//		} else {
+//			log.info("no se encontro producto");
+//		}
 
 		return producto;
 	}

@@ -3,13 +3,13 @@ package com.example.springboot.app.item.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -29,6 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.springboot.app.item.model.Item;
 import com.example.springboot.app.item.model.Producto;
 import com.example.springboot.app.item.service.ItemService;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import io.micrometer.core.annotation.TimedSet;
 
 @RefreshScope
 @RestController
@@ -55,12 +59,26 @@ public class ItemController {
 		System.out.println("token: " + token);
 		return itemService.findAll();
 	}
-
+// Factory primera forma
 //	@HystrixCommand(fallbackMethod = "metodoAlternativo")
 	@GetMapping("/ver/{id}/cantidad/{cantidad}")
 	public Item detalle(@PathVariable Long id, @PathVariable Integer cantidad) {
-		
-		return cbFactory.create("items").run(()-> itemService.findById(id, cantidad) , e-> metodoAlternativo(id, cantidad, e));
+		return cbFactory.create("items").run(() -> itemService.findById(id, cantidad),
+				e -> metodoAlternativo(id, cantidad, e));
+	}
+
+	// Factory segunda forma
+	@CircuitBreaker(name="items", fallbackMethod = "metodoAlternativo")
+	@GetMapping("/ver2/{id}/cantidad/{cantidad}")
+	public Item detalle2(@PathVariable Long id, @PathVariable Integer cantidad) {
+		return itemService.findById(id, cantidad);
+	}
+	
+	@CircuitBreaker(name = "items", fallbackMethod = "metodoAlternativo2")
+	@TimeLimiter(name = "items")
+	@GetMapping("/ver3/{id}/cantidad/{cantidad}")
+	public CompletableFuture<Item> detalle3(@PathVariable Long id, @PathVariable Integer cantidad) {
+		return CompletableFuture.supplyAsync(() -> itemService.findById(id, cantidad));
 	}
 
 	public Item metodoAlternativo(Long id, Integer cantidad, Throwable e) {
@@ -75,6 +93,18 @@ public class ItemController {
 		return itm;
 	}
 
+	public CompletableFuture<Item> metodoAlternativo2(Long id, Integer cantidad, Throwable e) {
+		log.error("error: ", e.getMessage());
+		Item itm = new Item();
+		Producto p = new Producto();
+		itm.setCantidad(cantidad);
+		p.setId(id);
+		p.setNombre("Helados");
+		p.setPrecio(2.5);
+		itm.setProducto(p);
+		return CompletableFuture.supplyAsync(() -> itm);
+	}
+	
 	@GetMapping("/obtener-config")
 	public ResponseEntity<?> obtenerConfig(@Value("${server.port}") String puerto) {
 		log.info("texto -> " + texto);

@@ -1,6 +1,7 @@
 package com.example.springboot.app.productos.controller;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -45,24 +46,21 @@ public class ProductoController {
 
 	@GetMapping("/ver/{id}") // permite mapear una url
 	public Producto detalle(@PathVariable Long id) throws Exception {
+		if (id.equals(10L)) {
+			throw new IllegalStateException("Producto no Encontrado");
+		}
+
+		if (id.equals(7L)) {
+			TimeUnit.SECONDS.sleep(5L);
+		}
+
 		Producto producto = iProductoService.findById(id);
-//		producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
 		if (null != producto) {
 			producto.setPort(port);
 		} else {
 			log.info("no se encontro producto");
 		}
 
-//		boolean ok=false;
-//		if (ok=false) {
-//			throw new Exception("No se pudo cargar el producto");
-//		}
-
-//		try {
-//			Thread.sleep(2000L);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 		return producto;
 	}
 

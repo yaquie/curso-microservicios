@@ -2,7 +2,6 @@ package com.example.springboot.app.item.clientes;
 
 import java.util.List;
 
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,7 @@ import com.example.springboot.app.item.model.Producto;
 
 //declarando que esta interfaz es un cliente feign
 @FeignClient(name = "servicio-productos")
-@RibbonClient(name = "servicio-productos")
+//@RibbonClient(name = "servicio-productos")
 public interface ProductoClienteRest {
 
 	@GetMapping("/listar")

@@ -1,5 +1,7 @@
 package com.example.springboot.app.item.model;
 
+import pe.com.app.commons.entity.Producto;
+
 public class Item {
 	private Producto producto;
 	private Integer cantidad;

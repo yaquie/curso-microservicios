@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.springboot.app.item.model.Item;
-import com.example.springboot.app.item.model.Producto;
+//import com.example.springboot.app.item.model.Producto;
+import pe.com.app.commons.entity.Producto;
 
 @Service("serviceRestTemplate")
 public class ItemServiceImpl implements ItemService {

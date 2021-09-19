@@ -3,7 +3,8 @@ package com.example.springboot.app.item.service;
 import java.util.List;
 
 import com.example.springboot.app.item.model.Item;
-import com.example.springboot.app.item.model.Producto;
+//import com.example.springboot.app.item.model.Producto;
+import pe.com.app.commons.entity.Producto;
 
 public interface ItemService {
 	public List<Item> findAll();

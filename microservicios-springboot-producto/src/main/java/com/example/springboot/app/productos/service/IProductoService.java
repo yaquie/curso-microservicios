@@ -2,7 +2,8 @@ package com.example.springboot.app.productos.service;
 
 import java.util.List;
 
-import com.example.springboot.app.productos.model.entity.Producto;
+//import com.example.springboot.app.productos.model.entity.Producto; 
+import pe.com.app.commons.entity.Producto;
 
 public interface IProductoService {
 	public List<Producto> findAll();

@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-import pe.com.app.usuarios.model.entity.Usuario;
+import pe.com.app.commons.usuarios.model.entity.Usuario;
 
 @RepositoryRestResource(path = "usuarios")
 public interface UsuarioDao extends PagingAndSortingRepository<Usuario, Long> {
